@@ -1,0 +1,47 @@
+.home-container {
+  @apply p-5;
+
+  .search-bar {
+    @apply flex space-x-4;
+
+    .input-container {
+      width: 100%;
+    }
+  }
+
+  .content {
+    @apply mt-5 grid grid-cols-1 lg:grid-cols-6 gap-5;
+
+    .last-watched-videos {
+      @apply lg:col-span-4 2xl:col-span-5;
+    }
+
+    .recommended-videos {
+      @apply flex flex-col gap-5 lg:flex-col-reverse lg:col-span-2 2xl:col-span-1;
+
+      p {
+        @apply text-right lg:text-left;
+      }
+
+      .recommended-videos_list {
+        @apply flex flex-col gap-5;
+
+        .video {
+          @apply cursor-pointer hover:shadow-md transition;
+        }
+      }
+    }
+
+    .video {
+      @apply bg-gray-300 w-full rounded-lg;
+    }
+
+    .video--big {
+      @apply h-96;
+    }
+
+    .video--small {
+      @apply h-96 lg:h-40;
+    }
+  }
+}
