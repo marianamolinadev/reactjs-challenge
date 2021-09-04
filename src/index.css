@@ -35,3 +35,10 @@ h2 {
 a {
   @apply underline text-blue-600;
 }
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+}

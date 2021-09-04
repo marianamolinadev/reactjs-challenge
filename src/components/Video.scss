@@ -1,0 +1,11 @@
+.video {
+  @apply bg-gray-300 w-full rounded-lg;
+}
+
+.video--big {
+  @apply h-96;
+}
+
+.video--small {
+  @apply cursor-pointer hover:shadow-md transition;
+}
