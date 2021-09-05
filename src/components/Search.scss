@@ -21,7 +21,7 @@
       }
 
       .suggested-video {
-        @apply lg:col-span-2 2xl:col-span-1 lg:col-end-7;
+        @apply flex flex-col gap-5 lg:col-span-2 2xl:col-span-1 lg:col-end-7;
       }
 
       .watched-videos {

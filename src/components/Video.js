@@ -3,11 +3,16 @@ import "./Video.scss";
 const Video = ({ size, video }) => {
   if (size == "small") {
     return (
-      <img
-        className="video video--small"
-        src={video?.snippet?.thumbnails.medium.url}
-        alt=""
-      />
+      <div>
+        <img
+          className="video video--small"
+          src={video?.snippet?.thumbnails.medium.url}
+          alt=""
+        />
+        <p className="text-left	truncate">
+          {decodeURI(video?.snippet?.title ?? "")}
+        </p>
+      </div>
     );
   } else {
     return (
@@ -27,7 +32,7 @@ const Video = ({ size, video }) => {
         ></iframe>
         <div className="flex gap-5 items-baseline">
           <h2>{decodeURI(video?.snippet?.title ?? "")}</h2>
-          <a href="/">Watch</a>
+          <a href="/">Details</a>
         </div>
       </div>
     );

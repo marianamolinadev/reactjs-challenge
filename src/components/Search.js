@@ -6,12 +6,13 @@ import { SharedConstants } from "../sharedConstant";
 const Search = () => {
   const [filter, setFilter] = useState("");
   const [filteredVideos, setFilteredVideos] = useState(null);
+  const [selectedVideo, setSelectedVideo] = useState(null);
 
   useEffect(() => {
-    requestRecommendedVideos();
+    requestVideos(filter);
   }, []);
 
-  async function requestRecommendedVideos(filter) {
+  async function requestVideos(filter) {
     const params = {
       part: "snippet",
       maxResults: 4,
@@ -25,19 +26,20 @@ const Search = () => {
     const res = await fetch(`${SharedConstants.API_URL}/search?${qs}`);
     const json = await res.json();
 
+    setSelectedVideo(json.items[0]);
     setFilteredVideos(json.items);
   }
 
-  const searchVideo = () => {
-    requestRecommendedVideos(filter);
-  };
+  async function changeSelectedVideo(video) {
+    setSelectedVideo(video);
+  }
 
   return (
     <div className="home-container">
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          searchVideo();
+          requestVideos(filter);
         }}
       >
         <div className="search-bar">
@@ -70,15 +72,22 @@ const Search = () => {
       <div className="content">
         {filteredVideos?.length > 0 ? (
           <div className="video_list">
-            {filteredVideos?.map((rV, index) => (
-              <div
-                key={rV.id.videoId}
-                className={index === 0 ? "primary-video" : "suggested-video"}
-              >
-                <Video size={index === 0 ? "big" : "small"} video={rV} />
-              </div>
-            ))}
-            <p className="watched-videos">Videos watched: 17</p>
+            <div className="primary-video">
+              <Video size="big" video={selectedVideo} />
+            </div>
+            <div className="suggested-video">
+              {filteredVideos
+                .filter((video) => video.id != selectedVideo?.id)
+                ?.map((video) => (
+                  <button
+                    key={video.id.videoId}
+                    onClick={() => changeSelectedVideo(video)}
+                  >
+                    <Video size="small" video={video} />
+                  </button>
+                ))}
+              <p className="watched-videos">Videos watched: 17</p>
+            </div>
           </div>
         ) : filteredVideos ? (
           <div className="text-center">
@@ -90,7 +99,7 @@ const Search = () => {
           </div>
         ) : (
           <div className="loading">
-            <h3 className="text-xl">Cargando...</h3>
+            <h3 className="text-xl">Loading...</h3>
           </div>
         )}
       </div>
