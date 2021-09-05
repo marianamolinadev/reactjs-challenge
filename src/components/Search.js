@@ -1,33 +1,57 @@
 import "./Search.scss";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import Video from "./Video";
 import { SharedConstants } from "../sharedConstant";
+import { TotalViewsContext } from "../Contexts/TotalViewsContext";
+import { SpinnerContext } from "../Contexts/SpinnerContext";
 
 const Search = () => {
   const [filter, setFilter] = useState("");
   const [filteredVideos, setFilteredVideos] = useState(null);
   const [selectedVideo, setSelectedVideo] = useState(null);
+  const [responseError, setResponseError] = useState(null);
+
+  const { totalViews } = useContext(TotalViewsContext);
+  const { setSpinner } = useContext(SpinnerContext);
 
   useEffect(() => {
     requestVideos(filter);
   }, []);
 
   async function requestVideos(filter) {
-    const params = {
-      part: "snippet",
-      maxResults: 4,
-      q: filter ?? "",
-      type: "video",
-      key: process.env.REACT_APP_YOUTUBE_API_KEY,
-    };
-    const qs = Object.keys(params)
-      .map((key) => `${key}=${params[key]}`)
-      .join("&");
-    const res = await fetch(`${SharedConstants.API_URL}/search?${qs}`);
-    const json = await res.json();
+    try {
+      setSpinner(true);
 
-    setSelectedVideo(json.items[0]);
-    setFilteredVideos(json.items);
+      const params = {
+        part: "snippet",
+        maxResults: 4,
+        q: filter ?? "",
+        type: "video",
+        key: process.env.REACT_APP_YOUTUBE_API_KEY,
+      };
+
+      const qs = Object.keys(params)
+        .map((key) => `${key}=${params[key]}`)
+        .join("&");
+      const res = await fetch(`${SharedConstants.API_URL}/search?${qs}`);
+      const json = await res?.json();
+
+      if (json?.items?.length > 0) {
+        setSelectedVideo(json.items[0]);
+        setFilteredVideos(json.items);
+      } else if (json?.items?.length === 0) {
+        setFilteredVideos([]);
+      }
+      if (json?.error) {
+        setResponseError(json.error.message);
+      } else if (!json) {
+        setResponseError("Something went wrong. Please, try again later!");
+      }
+    } catch (e) {
+      setResponseError(e.message);
+    } finally {
+      setSpinner(false);
+    }
   }
 
   async function changeSelectedVideo(video) {
@@ -86,20 +110,24 @@ const Search = () => {
                     <Video size="small" video={video} />
                   </button>
                 ))}
-              <p className="watched-videos">Videos watched: 17</p>
+              <p className="watched-videos">Videos watched: {totalViews}</p>
             </div>
           </div>
-        ) : filteredVideos ? (
-          <div className="text-center">
-            <h3 className="text-lg">No results</h3>
-            <p className="text-gray-400">
-              There were no results matching your search. Try with a different
-              search term.
-            </p>
-          </div>
         ) : (
-          <div className="loading">
-            <h3 className="text-xl">Loading...</h3>
+          filteredVideos && (
+            <div className="text-center">
+              <h3 className="text-lg">No results</h3>
+              <p className="text-gray-400">
+                There were no results matching your search. Try with a different
+                search term.
+              </p>
+            </div>
+          )
+        )}
+        {responseError && (
+          <div className="text-center">
+            <h3 className="text-lg">Error</h3>
+            <p className="text-gray-400">{responseError}</p>
           </div>
         )}
       </div>

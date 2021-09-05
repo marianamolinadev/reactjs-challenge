@@ -37,8 +37,5 @@ a {
 }
 
 .loading {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 80vh;
+  @apply absolute bg-opacity-70 bg-black text-white flex justify-center items-center h-screen w-full;
 }

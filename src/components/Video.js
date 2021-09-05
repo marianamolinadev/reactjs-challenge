@@ -1,6 +1,10 @@
+import { useContext } from "react";
+import { TotalViewsContext } from "../Contexts/TotalViewsContext";
 import "./Video.scss";
 
 const Video = ({ size, video }) => {
+  const { totalViews, setTotalViews } = useContext(TotalViewsContext);
+
   if (size == "small") {
     return (
       <div>
@@ -27,9 +31,13 @@ const Video = ({ size, video }) => {
       <div>
         <iframe
           className="video video--big"
-          src={`https:www.youtube.com/embed/${video?.id.videoId}?enablejsapi=1`}
+          src={`https:www.youtube.com/embed/${video?.id.videoId}?enablejsapi=1?autoplay=1`}
           title="myFrame"
+          onReady={() => console.log("onReady")}
+          onStateChange={() => console.log("onStateChange")}
+          onLoad={() => console.log("onLoad")}
         ></iframe>
+        <button onClick={() => setTotalViews(totalViews + 1)}>Play</button>
         <div className="flex gap-5 items-baseline">
           <h2>{decodeURI(video?.snippet?.title ?? "")}</h2>
           <a href="/">Details</a>
