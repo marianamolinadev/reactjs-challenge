@@ -24,6 +24,8 @@ const Search = () => {
 
       const params = {
         part: "snippet",
+        chart: "mostPopular",
+        regionCode: "UY",
         maxResults: 4,
         q: filter ?? "",
         type: "video",
@@ -33,7 +35,7 @@ const Search = () => {
       const qs = Object.keys(params)
         .map((key) => `${key}=${params[key]}`)
         .join("&");
-      const res = await fetch(`${SharedConstants.API_URL}/search?${qs}`);
+      const res = await fetch(`${SharedConstants.API_URL}/videos?${qs}`);
       const json = await res?.json();
 
       if (json?.items?.length > 0) {
@@ -104,7 +106,7 @@ const Search = () => {
                 .filter((video) => video.id != selectedVideo?.id)
                 ?.map((video) => (
                   <button
-                    key={video.id.videoId}
+                    key={video.id}
                     onClick={() => changeSelectedVideo(video)}
                   >
                     <Video size="small" video={video} />
