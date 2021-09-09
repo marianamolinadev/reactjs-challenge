@@ -4,6 +4,7 @@ import Video from "./Video";
 import { SharedConstants } from "../sharedConstant";
 import { TotalViewsContext } from "../Contexts/TotalViewsContext";
 import { SpinnerContext } from "../Contexts/SpinnerContext";
+import SearchIcon from "../icons/SearchIcon";
 
 const Search = () => {
   const [filter, setFilter] = useState("");
@@ -15,16 +16,18 @@ const Search = () => {
   const { setSpinner } = useContext(SpinnerContext);
 
   useEffect(() => {
-    requestVideos(filter);
+    getVideos();
   }, []);
 
-  async function requestVideos(filter) {
+  /**
+   * Searchs videos with a global filter
+   */
+  async function getVideos() {
     try {
       setSpinner(true);
 
       const params = {
         part: "snippet",
-        chart: "mostPopular",
         regionCode: "UY",
         maxResults: 4,
         q: filter ?? "",
@@ -32,22 +35,12 @@ const Search = () => {
         key: process.env.REACT_APP_YOUTUBE_API_KEY,
       };
 
-      const qs = Object.keys(params)
-        .map((key) => `${key}=${params[key]}`)
-        .join("&");
-      const res = await fetch(`${SharedConstants.API_URL}/videos?${qs}`);
-      const json = await res?.json();
+      const responseItems = await requestVideos(params);
 
-      if (json?.items?.length > 0) {
-        setSelectedVideo(json.items[0]);
-        setFilteredVideos(json.items);
-      } else if (json?.items?.length === 0) {
-        setFilteredVideos([]);
-      }
-      if (json?.error) {
-        setResponseError(json.error.message);
-      } else if (!json) {
-        setResponseError("Something went wrong. Please, try again later!");
+      // If there is a response, the first item is set as the "selectedVideo"
+      setFilteredVideos(responseItems);
+      if (responseItems?.length > 0) {
+        setSelectedVideo(responseItems[0]);
       }
     } catch (e) {
       setResponseError(e.message);
@@ -56,8 +49,54 @@ const Search = () => {
     }
   }
 
+  /**
+   * Calls youtube api
+   * @param {*} params query params used to call the api
+   * @returns api call result
+   */
+  async function requestVideos(params) {
+    const qs = Object.keys(params)
+      .map((key) => `${key}=${params[key]}`)
+      .join("&");
+    const res = await fetch(`${SharedConstants.API_URL}/search?${qs}`);
+    const json = await res?.json();
+    if (json?.error) {
+      setResponseError(json.error.message);
+    } else if (!json) {
+      setResponseError("Something went wrong. Please, try again later!");
+    }
+    return json.items;
+  }
+
+  /**
+   * When selectedVideo is changed, the related videos must be load
+   * @param {} video
+   */
   async function changeSelectedVideo(video) {
-    setSelectedVideo(video);
+    try {
+      setSpinner(true);
+
+      const params = {
+        part: "snippet",
+        regionCode: "UY",
+        maxResults: 3,
+        relatedToVideoId: video.id.videoId,
+        type: "video",
+        key: process.env.REACT_APP_YOUTUBE_API_KEY,
+      };
+
+      const responseItems = await requestVideos(params);
+
+      if (responseItems?.length > 0) {
+        const newFilteredVideos = [video].concat(responseItems);
+        setFilteredVideos(newFilteredVideos);
+      }
+      setSelectedVideo(video);
+    } catch (e) {
+      setResponseError(e.message);
+    } finally {
+      setSpinner(false);
+    }
   }
 
   return (
@@ -65,25 +104,12 @@ const Search = () => {
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          requestVideos(filter);
+          getVideos();
         }}
       >
         <div className="search-bar">
           <div className="input-container">
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              ></path>
-            </svg>
+            <SearchIcon />
             <input
               type="text"
               placeholder="Video name..."
@@ -98,15 +124,19 @@ const Search = () => {
       <div className="content">
         {filteredVideos?.length > 0 ? (
           <div className="video_list">
-            <div className="primary-video">
-              <Video size="big" video={selectedVideo} />
-            </div>
+            {selectedVideo && (
+              <div className="primary-video">
+                <Video size="big" video={selectedVideo} />
+              </div>
+            )}
             <div className="suggested-video">
               {filteredVideos
-                .filter((video) => video.id != selectedVideo?.id)
+                .filter(
+                  (video) => video.id.videoId != selectedVideo?.id.videoId
+                )
                 ?.map((video) => (
                   <button
-                    key={video.id}
+                    key={video.id.videoId}
                     onClick={() => changeSelectedVideo(video)}
                   >
                     <Video size="small" video={video} />

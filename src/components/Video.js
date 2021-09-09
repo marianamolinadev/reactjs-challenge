@@ -5,15 +5,10 @@ import { Link } from "react-router-dom";
 import YouTube from "react-youtube";
 
 const Video = ({ size, video }) => {
-  const { totalViews, setTotalViews, watchedVideos, setWatchedVideos } =
-    useContext(TotalViewsContext);
+  const { totalViews, setTotalViews } = useContext(TotalViewsContext);
 
   function saveWatchedVideo() {
-    console.log(watchedVideos);
-    if (!watchedVideos[video.id]) {
-      setWatchedVideos[video.id] = true;
-      setTotalViews(totalViews + 1);
-    }
+    setTotalViews(totalViews + 1);
   }
 
   return (
@@ -33,12 +28,12 @@ const Video = ({ size, video }) => {
         <div>
           <YouTube
             className="video video--big"
-            videoId={video.id}
+            videoId={video.id.videoId}
             onPlay={() => saveWatchedVideo()}
           />
-          <div className="flex gap-5 items-baseline">
+          <div className="flex flex-col md:flex-row gap-2 md:gap-5 items-baseline">
             <h2>{decodeURI(video?.snippet?.title ?? "")}</h2>
-            <Link to={`/details/${video.id}`}>View details</Link>
+            <Link to={`/details/${video.id.videoId}`}>View details</Link>
           </div>
         </div>
       )}
