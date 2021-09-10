@@ -1,26 +1,35 @@
-import "./Search.scss";
 import { useState, useEffect, useContext } from "react";
-import Video from "./Video";
+import "./Search.scss";
 import { SharedConstants } from "../sharedConstant";
-import { TotalViewsContext } from "../Contexts/TotalViewsContext";
-import { SpinnerContext } from "../Contexts/SpinnerContext";
 import SearchIcon from "../icons/SearchIcon";
+import Video from "./Video";
+import { VideoViewsContext } from "../Contexts/VideoViewsContext";
+import { SpinnerContext } from "../Contexts/SpinnerContext";
 
 const Search = () => {
+  // Filter state used in global search
   const [filter, setFilter] = useState("");
+  // Filtered videos by the api
   const [filteredVideos, setFilteredVideos] = useState(null);
+  // Selected video by the user
   const [selectedVideo, setSelectedVideo] = useState(null);
+  // Shows an error message (if there is one)
   const [responseError, setResponseError] = useState(null);
 
-  const { totalViews } = useContext(TotalViewsContext);
+  // Total video views counter
+  const { videoViews } = useContext(VideoViewsContext);
+  // Spinner loader
   const { setSpinner } = useContext(SpinnerContext);
 
   useEffect(() => {
-    getVideos();
+    // If there is a last watched video, the primary video will show it.
+    videoViews.lastViewed
+      ? changeSelectedVideo(videoViews.lastViewed)
+      : getVideos();
   }, []);
 
   /**
-   * Searchs videos with a global filter
+   * Searches videos with a global filter
    */
   async function getVideos() {
     try {
@@ -51,7 +60,7 @@ const Search = () => {
 
   /**
    * Calls youtube api
-   * @param {*} params query params used to call the api
+   * @param params query params used to call the api
    * @returns api call result
    */
   async function requestVideos(params) {
@@ -70,7 +79,7 @@ const Search = () => {
 
   /**
    * When selectedVideo is changed, the related videos must be load
-   * @param {} video
+   * @param video
    */
   async function changeSelectedVideo(video) {
     try {
@@ -142,7 +151,9 @@ const Search = () => {
                     <Video size="small" video={video} />
                   </button>
                 ))}
-              <p className="watched-videos">Videos watched: {totalViews}</p>
+              <p className="watched-videos">
+                Videos watched: {videoViews.count}
+              </p>
             </div>
           </div>
         ) : (

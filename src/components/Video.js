@@ -1,17 +1,31 @@
 import { useContext } from "react";
-import { TotalViewsContext } from "../Contexts/TotalViewsContext";
-import "./Video.scss";
 import { Link } from "react-router-dom";
 import YouTube from "react-youtube";
+import "./Video.scss";
 import InfoIcon from "../icons/InfoIcon";
+import { VideoViewsContext } from "../Contexts/VideoViewsContext";
 
 const Video = ({ size, video }) => {
-  const { totalViews, setTotalViews } = useContext(TotalViewsContext);
+  const { videoViews, setVideoViews } = useContext(VideoViewsContext);
 
-  function saveWatchedVideo() {
-    setTotalViews(totalViews + 1);
+  /**
+   * Sets the lastViewed video, and if it's not the current video, the total views counter increments +1
+   * @param currentVideo just played video
+   */
+  function saveWatchedVideo(currentVideo) {
+    if (videoViews.lastViewed?.id?.videoId != currentVideo?.id?.videoId) {
+      setVideoViews({
+        count: videoViews.count + 1,
+        lastViewed: currentVideo,
+      });
+    }
   }
 
+  /**
+   * Replaces escape sequences in a string with the character that it represents.
+   * @param string string to decode
+   * @returns decoded string
+   */
   function decodeString(string) {
     var elem = document.createElement("textarea");
     elem.innerHTML = string;
@@ -41,7 +55,7 @@ const Video = ({ size, video }) => {
           <YouTube
             className="video video--big"
             videoId={video.id.videoId}
-            onPlay={() => saveWatchedVideo()}
+            onPlay={() => saveWatchedVideo(video)}
           />
           <div className="flex flex-col md:flex-row gap-2 md:gap-5 items-baseline">
             <h2>{decodeString(video?.snippet?.title ?? "")}</h2>

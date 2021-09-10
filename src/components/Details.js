@@ -1,16 +1,15 @@
 import { useState, useEffect, useContext } from "react";
 import { useParams } from "react-router";
-import { SpinnerContext } from "../Contexts/SpinnerContext";
 import { Link } from "react-router-dom";
-import { SharedConstants } from "../sharedConstant";
-
 import "./Details.scss";
+import { SharedConstants } from "../sharedConstant";
+import BackIcon from "../icons/BackIcon";
+import Calendar from "../icons/Calendar";
+import Exclamation from "../icons/Exclamation";
+import EyeIcon from "../icons/EyeIcon";
 import ThumbUpIcon from "../icons/ThumbUpIcon";
 import ThumbDownIcon from "../icons/ThumbDownIcon";
-import EyeIcon from "../icons/EyeIcon";
-import BackIcon from "../icons/BackIcon";
-import Exclamation from "../icons/Exclamation";
-import Calendar from "../icons/Calendar";
+import { SpinnerContext } from "../Contexts/SpinnerContext";
 
 const Details = () => {
   const { id } = useParams();
@@ -31,7 +30,6 @@ const Details = () => {
       const channelInfo = await requestChannelInfo(
         videoInfo?.snippet?.channelId ?? null
       );
-      console.log(channelInfo);
 
       const video = {
         title: videoInfo.snippet?.title ?? "No title",
@@ -66,12 +64,9 @@ const Details = () => {
 
       setVideo(video);
     } catch (e) {
-      console.log(e);
-      // setResponseError(e.message);
+      console.error(e);
     } finally {
-      setTimeout(() => {
-        setSpinner(false);
-      }, 5000);
+      setSpinner(false);
     }
   }
 
