@@ -14,7 +14,7 @@ function App() {
   const [spinner, setSpinner] = useState(false);
 
   return (
-    <div>
+    <div id="app-container">
       <SpinnerContext.Provider value={{ spinner, setSpinner }}>
         {spinner && <Loading />}
         <TotalViewsContext.Provider value={{ totalViews, setTotalViews }}>

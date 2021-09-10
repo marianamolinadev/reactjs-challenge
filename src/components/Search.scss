@@ -17,11 +17,11 @@
       grid-template-rows: auto;
 
       .primary-video {
-        @apply lg:col-span-4 2xl:col-span-5;
+        @apply lg:col-span-4 2xl:col-span-3;
       }
 
       .suggested-video {
-        @apply flex flex-col gap-5 lg:col-span-2 2xl:col-span-1 lg:col-end-7;
+        @apply flex flex-col gap-5 lg:col-span-2 2xl:col-span-3 lg:col-end-7;
       }
 
       .watched-videos {

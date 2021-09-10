@@ -117,7 +117,7 @@ const Search = () => {
               onChange={(e) => setFilter(e.target.value)}
             />
           </div>
-          <button className="primary-button">Search</button>
+          <button className="primary-button red--button">Search</button>
         </div>
       </form>
 

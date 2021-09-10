@@ -7,9 +7,5 @@
 }
 
 .video--small {
-  @apply cursor-pointer hover:shadow-md transition;
-}
-
-a {
-  @apply underline text-blue-600;
+  @apply cursor-pointer hover:shadow-md transition 2xl:w-80;
 }
