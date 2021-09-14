@@ -1,9 +1,9 @@
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { useState } from "react";
 import "./App.css";
-import Details from "./Components/Details";
-import Loading from "./Components/Loading";
-import Search from "./Components/Search";
+import Details from "./components/Details";
+import Loading from "./components/Loading";
+import Search from "./components/Search";
 import { VideoViewsContext } from "./Contexts/VideoViewsContext";
 import { SpinnerContext } from "./Contexts/SpinnerContext";
 

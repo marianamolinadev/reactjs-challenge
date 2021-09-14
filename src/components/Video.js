@@ -38,8 +38,9 @@ const Video = ({ size, video }) => {
         <div className="flex flex-col 2xl:flex-row 2xl:gap-3 2xl:items-center">
           <img
             className="video video--small"
-            src={video?.snippet?.thumbnails.medium.url}
+            src={video?.snippet?.thumbnails.medium.url ?? "../assets/none.png"}
             alt=""
+            data-testid="thumbnail"
           />
           <div className="overflow-hidden">
             <p className="text-left	truncate">
@@ -54,14 +55,14 @@ const Video = ({ size, video }) => {
         <div>
           <YouTube
             className="video video--big"
-            videoId={video.id.videoId}
+            videoId={video?.id?.videoId}
             onPlay={() => saveWatchedVideo(video)}
           />
           <div className="flex flex-col md:flex-row gap-2 md:gap-5 items-baseline">
             <h2>{decodeString(video?.snippet?.title ?? "")}</h2>
             <button className="primary-button blue--button m-5 mt-2 ml-0 md:mr-0 md:ml-5 md:mt-5">
               <InfoIcon />
-              <Link to={`/details/${video.id.videoId}`}>View details</Link>
+              <Link to={`/details/${video?.id?.videoId}`}>View details</Link>
             </button>
           </div>
           <p className="text-left text-xs text-gray-400">
